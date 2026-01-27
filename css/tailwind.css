@@ -245,8 +245,9 @@ button {
 .shortener-card {
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   overflow: visible;
   transition: opacity 0.26s ease-out;
   background: rgb(55 55 55 / 62%);
@@ -436,6 +437,7 @@ button {
   display: block;
   position: relative;
   z-index: 5;
+  clear: both;
 }
 
 .result-card {
@@ -521,6 +523,9 @@ button {
   padding: 16px;
   border-radius: 8px;
   border: 1px solid;
+  width: 100%;
+  position: relative;
+  z-index: 6;
 }
 
 .message-container.error {
@@ -591,4 +596,5 @@ button {
 .main-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
