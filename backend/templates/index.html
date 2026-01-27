@@ -1,0 +1,151 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL Shortener - Make Your Links Shorter</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Code:ital,wght@0,300..800;1,300..800&family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind.css') }}">
+  <meta name="description" content="Shorten your long URLs into compact, shareable links.">
+
+  <meta property="og:title" content="URL Shortener">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="">
+  <meta property="og:description" content="Shorten your long URLs into compact, shareable links.">
+
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
+  <link rel="icon" href="{{ url_for('static', filename='icon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icon.png') }}">
+
+  <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+  <meta name="theme-color" content="#3498db">
+</head>
+
+<body>
+  <!-- ColorBends Tailwind Background -->
+  <div class="colorbends-bg">
+    <div class="colorbends-container">
+      <div class="colorbends-blob colorbends-blob-1"></div>
+      <div class="colorbends-blob colorbends-blob-2"></div>
+      <div class="colorbends-blob colorbends-blob-3"></div>
+      <div class="colorbends-blob colorbends-blob-4"></div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="container">
+    <header class="header">
+      <h1>URL Shortener</h1>
+      <p class="subtitle">Transform long URLs into short, shareable links</p>
+    </header>
+
+    <main class="main-content">
+      <div class="shortener-card glass-surface">
+        <form id="shortenerForm" class="form">
+          <div class="form-group">
+            <label for="urlInput" class="form-label">Enter your URL:</label>
+            <input 
+              type="url" 
+              id="urlInput" 
+              class="form-input" 
+              placeholder="https://example.com/very/long/url"
+              required
+            />
+            <span class="form-error" id="errorMessage"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="codeInput" class="form-label">Custom short code (optional):</label>
+            <input 
+              type="text" 
+              id="codeInput" 
+              class="form-input" 
+              placeholder="e.g., mylink, abc123 (leave blank for auto-generated)"
+            />
+            <small class="form-hint">Letters, numbers, hyphens, and underscores only. Min 3, Max 32 characters.</small>
+            <span class="form-error" id="codeErrorMessage"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="shortenBtn">
+            <span class="btn-text">Shorten URL</span>
+            <span class="btn-loader hidden" id="btnLoader"></span>
+          </button>
+        </form>
+
+        <div id="resultContainer" class="result-container hidden">
+          <div class="result-card">
+            <div class="result-group">
+              <label class="result-label">Your Short URL:</label>
+              <div class="result-display">
+                <input 
+                  type="text" 
+                  id="shortUrlOutput" 
+                  class="result-input" 
+                  readonly
+                />
+                <button type="button" class="btn btn-secondary" id="copyBtn" title="Copy to clipboard">
+                  📋 Copy
+                </button>
+              </div>
+              <span class="copy-feedback hidden" id="copyFeedback">Copied!</span>
+            </div>
+
+            <div class="result-group">
+              <label class="result-label">Original URL:</label>
+              <input 
+                type="text" 
+                id="originalUrlOutput" 
+                class="result-input" 
+                readonly
+              />
+            </div>
+
+            <div class="result-group">
+              <label class="result-label">Short Code:</label>
+              <input 
+                type="text" 
+                id="codeOutput" 
+                class="result-input" 
+                readonly
+              />
+            </div>
+
+            <div class="result-group">
+              <label class="result-label">Expires At:</label>
+              <input 
+                type="text" 
+                id="expiresAtOutput" 
+                class="result-input" 
+                readonly
+              />
+              <small class="expiration-info"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#FFFFFF"><path d="M480-80q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-440q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-800q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-440q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-80Zm0-360Zm112 168 56-56-128-128v-184h-80v216l152 152ZM224-866l56 56-170 170-56-56 170-170Zm512 0 170 170-56 56-170-170 56-56ZM480-160q117 0 198.5-81.5T760-440q0-117-81.5-198.5T480-720q-117 0-198.5 81.5T200-440q0 117 81.5 198.5T480-160Z"/></svg> This link will expire in 24 hours</small>
+            </div>
+          </div>
+        </div>
+
+        <div id="messageContainer" class="message-container hidden">
+          <div class="message" id="messageContent"></div>
+        </div>
+      </div>
+
+
+    </main>
+
+    <footer class="footer">
+      <p>Product of Ubrivant™ @2026</p>
+      <p>@dhruvilpatil</p>
+    </footer>
+  </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

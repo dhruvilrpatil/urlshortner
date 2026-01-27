@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URL Shortener - Static</title>
+  <link rel="stylesheet" href="backend/static/css/style.css">
+  <link rel="stylesheet" href="backend/static/css/tailwind.css">
+</head>
+
+<body>
+  <div class="colorbends-bg">
+    <div class="colorbends-container">
+      <div class="colorbends-blob colorbends-blob-1"></div>
+      <div class="colorbends-blob colorbends-blob-2"></div>
+      <div class="colorbends-blob colorbends-blob-3"></div>
+      <div class="colorbends-blob colorbends-blob-4"></div>
+    </div>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="container">
+      <header class="header">
+        <h1>URL Shortener</h1>
+        <p class="subtitle">Transform long URLs into short, shareable links</p>
+      </header>
+
+      <main class="main-content">
+        <div class="shortener-card glass-surface">
+          <form id="shortenerForm" class="form">
+            <div class="form-group">
+              <label for="urlInput" class="form-label">Enter your URL:</label>
+              <input type="url" id="urlInput" class="form-input" placeholder="https://example.com/very/long/url" required />
+              <span class="form-error" id="errorMessage"></span>
+            </div>
+
+            <div class="form-group">
+              <label for="codeInput" class="form-label">Custom short code (optional):</label>
+              <input type="text" id="codeInput" class="form-input" placeholder="e.g., mylink, abc123 (leave blank for auto-generated)" />
+              <small class="form-hint">Letters, numbers, hyphens, and underscores only. Min 3, Max 32 characters.</small>
+              <span class="form-error" id="codeErrorMessage"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="shortenBtn">
+              <span class="btn-text">Shorten URL</span>
+              <span class="btn-loader hidden" id="btnLoader"></span>
+            </button>
+          </form>
+
+          <div id="resultContainer" class="result-container hidden">
+            <button type="button" class="back-btn" id="backBtn" title="Go back to form">← Back</button>
+            <div class="result-card">
+              <div class="result-group">
+                <label class="result-label">Your Short URL:</label>
+                <div class="result-display">
+                  <input type="text" id="shortUrlOutput" class="result-input" readonly />
+                  <button type="button" class="btn btn-secondary" id="copyBtn" title="Copy to clipboard">📋 Copy</button>
+                </div>
+                <span class="copy-feedback hidden" id="copyFeedback">Copied!</span>
+              </div>
+
+              <div class="result-group">
+                <label class="result-label">Original URL:</label>
+                <input type="text" id="originalUrlOutput" class="result-input" readonly />
+              </div>
+
+              <div class="result-group">
+                <label class="result-label">Short Code:</label>
+                <input type="text" id="codeOutput" class="result-input" readonly />
+              </div>
+
+              <div class="result-group">
+                <label class="result-label">Expires At:</label>
+                <input type="text" id="expiresAtOutput" class="result-input" readonly />
+                <small class="expiration-info">This link will expire in 24 hours</small>
+              </div>
+            </div>
+          </div>
+
+          <div id="messageContainer" class="message-container hidden">
+            <div class="message" id="messageContent"></div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="footer">
+        <p>Product of Ubrivant™ @2026</p>
+        <p>@dhruvilpatil</p>
+      </footer>
+    </div>
+  </div>
+
+  <script src="backend/static/js/app.js"></script>
+</body>
+
+</html>
