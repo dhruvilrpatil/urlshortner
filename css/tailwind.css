@@ -245,10 +245,9 @@ button {
 .shortener-card {
   position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  overflow: visible;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   transition: opacity 0.26s ease-out;
   background: rgb(55 55 55 / 62%);
   backdrop-filter: blur(12px) saturate(1.8) brightness(1.2);
@@ -261,7 +260,6 @@ button {
     0 2px 16px 0 rgba(31, 38, 135, 0.1),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.4),
     inset 0 -1px 0 0 rgba(255, 255, 255, 0.2);
-  width: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -361,8 +359,6 @@ button {
   width: 100%;
   display: flex;
   flex-direction: column;
-  position: relative;
-  z-index: 1;
 }
 
 /* Button styling */
@@ -433,11 +429,6 @@ button {
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  width: 100%;
-  display: block;
-  position: relative;
-  z-index: 5;
-  clear: both;
 }
 
 .result-card {
@@ -467,9 +458,6 @@ button {
   border-radius: 6px;
   padding: 10px 12px;
   font-size: 0.95rem;
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
   font-family: 'Courier New', monospace;
   word-break: break-all;
 }
@@ -523,9 +511,6 @@ button {
   padding: 16px;
   border-radius: 8px;
   border: 1px solid;
-  width: 100%;
-  position: relative;
-  z-index: 6;
 }
 
 .message-container.error {
@@ -572,10 +557,9 @@ button {
 
 /* Container */
 .container {
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
   padding: 40px 20px;
-  width: 100%;
 }
 
 /* Footer */
@@ -596,5 +580,4 @@ button {
 .main-content {
   display: flex;
   flex-direction: column;
-  width: 100%;
 }
