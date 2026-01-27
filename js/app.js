@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const codeInput = document.getElementById('codeInput');
   const shortenBtn = document.getElementById('shortenBtn');
   const btnText = document.querySelector('.btn-text');
-  const btnLoader = document.getElementById('btnLoader');
+  // Removed btnLoader reference
   const resultContainer = document.getElementById('resultContainer');
   const messageContainer = document.getElementById('messageContainer');
   const messageContent = document.getElementById('messageContent');
@@ -56,10 +56,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     
-    // Show loading state
+    // Show disabled state only (no loading animation)
     shortenBtn.disabled = true;
-    btnText.classList.add('hidden');
-    btnLoader.classList.remove('hidden');
     resultContainer.classList.add('hidden');
     
     try {
@@ -69,10 +67,8 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Error:', error);
       showMessage('An error occurred. Please try again.', 'error');
     } finally {
-      // Hide loading state
+      // Re-enable button (no loading animation)
       shortenBtn.disabled = false;
-      btnText.classList.remove('hidden');
-      btnLoader.classList.add('hidden');
     }
   });
   
@@ -305,6 +301,12 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         showMessage('Short link not found. It may have expired or does not exist.', 'error');
       }
+    } else {
+      // Ensure form is visible on page load
+      resultContainer.classList.add('hidden');
+      messageContainer.classList.add('hidden');
+      form.classList.remove('hidden');
+      urlInput.focus();
     }
   }
 
