@@ -63,54 +63,11 @@ document.addEventListener('DOMContentLoaded', function() {
     resultContainer.classList.add('hidden');
     
     try {
-      const payload = { url: url };
-      if (customCode) {
-        payload.code = customCode;
-      }
-      
-      const response = await fetch('/shorten', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Success - display results
-        shortUrlOutput.value = data.short_url;
-        originalUrlOutput.value = data.original_url;
-        codeOutput.value = data.code;
-        expiresAtOutput.value = formatDateTime(data.expires_at);
-        resultContainer.classList.remove('hidden');
-        
-        // Show message if URL was already shortened
-        if (data.message) {
-          showMessage(data.message, 'success');
-        }
-        
-        urlInput.value = '';
-        codeInput.value = '';
-        urlInput.focus();
-      } else {
-        // Error response from server
-        if (data.error) {
-          // Check if error is about the custom code
-          if (data.error.toLowerCase().includes('code') || data.error.toLowerCase().includes('already')) {
-            codeErrorMessage.textContent = data.error;
-          } else {
-            showMessage(data.error, 'error');
-          }
-        } else {
-          showMessage('Failed to shorten URL', 'error');
-        }
-      }
+      // Use client-side shortener
+      handleClientSideShorten(url, customCode);
     } catch (error) {
       console.error('Error:', error);
-      // Fallback to client-side demo shortener if backend is unavailable
-      handleClientSideShorten(url, customCode);
+      showMessage('An error occurred. Please try again.', 'error');
     } finally {
       // Hide loading state
       shortenBtn.disabled = false;
@@ -227,19 +184,52 @@ document.addEventListener('DOMContentLoaded', function() {
     codeErrorMessage.textContent = '';
   });
 
-  // Client-side demo shortener (fallback when backend is unavailable)
+  // Client-side shortener (localStorage-based)
   function handleClientSideShorten(url, customCode) {
     try {
-      // Generate a short code if not provided
-      const generatedCode = customCode || generateRandomCode();
+      const storage = JSON.parse(localStorage.getItem('shortenedUrls') || '{}');
       
-      // Create a demo short URL
-      const baseUrl = window.location.origin;
-      const shortUrl = baseUrl + '/?goto=' + encodeURIComponent(generatedCode);
+      // Check if custom code is provided
+      let generatedCode = customCode;
+      
+      if (customCode) {
+        // Check if custom code already exists
+        if (storage[customCode]) {
+          codeErrorMessage.textContent = 'This short code is already taken. Please choose another one.';
+          return;
+        }
+        generatedCode = customCode;
+      } else {
+        // Generate a unique code if not provided
+        let attempts = 0;
+        do {
+          generatedCode = generateRandomCode();
+          attempts++;
+        } while (storage[generatedCode] && attempts < 100);
+        
+        if (attempts >= 100) {
+          showMessage('Unable to generate a unique short code. Please try with a custom code.', 'error');
+          return;
+        }
+      }
+      
+      // Create a short URL
+      const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*\.html$/, '');
+      const shortUrl = baseUrl + '?goto=' + encodeURIComponent(generatedCode);
       
       // Calculate expiration (24 hours from now)
-      const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 24);
+      const createdAt = new Date();
+      const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+      
+      // Store in localStorage
+      storage[generatedCode] = {
+        url: url,
+        code: generatedCode,
+        shortUrl: shortUrl,
+        createdAt: createdAt.toISOString(),
+        expiresAt: expiresAt.toISOString()
+      };
+      localStorage.setItem('shortenedUrls', JSON.stringify(storage));
       
       // Display results
       shortUrlOutput.value = shortUrl;
@@ -248,25 +238,37 @@ document.addEventListener('DOMContentLoaded', function() {
       expiresAtOutput.value = formatDateTime(expiresAt.toISOString());
       resultContainer.classList.remove('hidden');
       
-      // Store in localStorage for demo purposes
-      const storage = JSON.parse(localStorage.getItem('shortenedUrls') || '{}');
-      storage[generatedCode] = {
-        url: url,
-        code: generatedCode,
-        shortUrl: shortUrl,
-        createdAt: new Date().toISOString(),
-        expiresAt: expiresAt.toISOString()
-      };
-      localStorage.setItem('shortenedUrls', JSON.stringify(storage));
+      // Check if this URL was already shortened
+      let isDuplicate = false;
+      for (let code in storage) {
+        if (code !== generatedCode && storage[code].url === url && !isExpired(storage[code].expiresAt)) {
+          isDuplicate = true;
+          break;
+        }
+      }
+      
+      if (isDuplicate) {
+        showMessage('✓ URL shortened (This URL was previously shortened)', 'success');
+      } else {
+        showMessage('✓ URL shortened successfully!', 'success');
+      }
       
       urlInput.value = '';
       codeInput.value = '';
       urlInput.focus();
-      
-      showMessage('✓ Demo mode: URL shortened (stored locally in browser)', 'success');
     } catch (e) {
       console.error('Client-side shortening error:', e);
       showMessage('An error occurred. Please try again.', 'error');
+    }
+  }
+
+  // Check if a URL is expired
+  function isExpired(expiresAtString) {
+    try {
+      const expiresAt = new Date(expiresAtString);
+      return new Date() > expiresAt;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -280,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return code;
   }
 
-  // Handle redirect on page load (demo mode)
+  // Handle redirect on page load
   function handleRedirect() {
     const params = new URLSearchParams(window.location.search);
     const gotoCode = params.get('goto');
@@ -291,15 +293,17 @@ document.addEventListener('DOMContentLoaded', function() {
       
       if (shortened) {
         // Check if expired
-        const expiresAt = new Date(shortened.expiresAt);
-        if (new Date() > expiresAt) {
+        if (isExpired(shortened.expiresAt)) {
+          // Remove expired entry
+          delete storage[gotoCode];
+          localStorage.setItem('shortenedUrls', JSON.stringify(storage));
           showMessage(`The short link has expired (expired at ${formatDateTime(shortened.expiresAt)})`, 'error');
           return;
         }
         // Redirect to the original URL
         window.location.href = shortened.url;
       } else {
-        showMessage('Short link not found. It may have expired or was created in a different session.', 'error');
+        showMessage('Short link not found. It may have expired or does not exist.', 'error');
       }
     }
   }
