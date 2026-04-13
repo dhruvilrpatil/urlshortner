@@ -5,6 +5,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>URL Shortener - Static</title>
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var gotoCode = params.get('goto');
+        if (!gotoCode) {
+          return;
+        }
+
+        var storage = JSON.parse(localStorage.getItem('shortenedUrls') || '{}');
+        var shortened = storage[gotoCode];
+        if (!shortened || !shortened.url) {
+          return;
+        }
+
+        if (shortened.expiresAt) {
+          var expiresAt = new Date(shortened.expiresAt);
+          if (!isNaN(expiresAt.getTime()) && Date.now() > expiresAt.getTime()) {
+            return;
+          }
+        }
+
+        window.location.replace(shortened.url);
+      } catch (_err) {
+      }
+    })();
+  </script>
+  <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/tailwind.css">
   <style>
     html {

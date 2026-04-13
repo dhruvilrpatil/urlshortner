@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', function() {
   const codeErrorMessage = document.getElementById('codeErrorMessage');
   const copyFeedback = document.getElementById('copyFeedback');
 
+  // Attempt redirect immediately to avoid rendering the UI first.
+  if (handleRedirect()) {
+    return;
+  }
+
   // Form submission
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -73,11 +78,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Back button functionality
-  backBtn.addEventListener('click', function() {
-    resultContainer.classList.add('hidden');
-    messageContainer.classList.add('hidden');
-    urlInput.focus();
-  });
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      resultContainer.classList.add('hidden');
+      messageContainer.classList.add('hidden');
+      urlInput.focus();
+    });
+  }
   
   // Copy button functionality
   copyBtn.addEventListener('click', function() {
@@ -294,10 +301,11 @@ document.addEventListener('DOMContentLoaded', function() {
           delete storage[gotoCode];
           localStorage.setItem('shortenedUrls', JSON.stringify(storage));
           showMessage(`The short link has expired (expired at ${formatDateTime(shortened.expiresAt)})`, 'error');
-          return;
+          return false;
         }
         // Redirect to the original URL
-        window.location.href = shortened.url;
+        window.location.replace(shortened.url);
+        return true;
       } else {
         showMessage('Short link not found. It may have expired or does not exist.', 'error');
       }
@@ -308,6 +316,8 @@ document.addEventListener('DOMContentLoaded', function() {
       form.classList.remove('hidden');
       urlInput.focus();
     }
+
+    return false;
   }
 
   // Check for redirect on page load
