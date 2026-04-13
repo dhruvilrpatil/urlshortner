@@ -1,7 +1,7 @@
+<div align="center">
 # URL Shortener
-
-Project URL: https://dhruvilrpatil.github.io/urlshortner/
-
+**[Live Demo →](https://urlcompress.vercel.app/)**
+</div>
 ## Quick start
 
 ```powershell
