@@ -1,7 +1,4 @@
-<div align="center">
-# URL Shortener
-**[Live Demo →](https://urlcompress.vercel.app/)**
-</div>
+#URL Compressor
 ## Quick start
 
 ```powershell
