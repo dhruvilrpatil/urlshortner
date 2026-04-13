@@ -1,4 +1,7 @@
-#URL Compressor
+<div align="center">
+# URL Compressor
+
+</div>
 ## Quick start
 
 ```powershell
